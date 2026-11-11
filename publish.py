@@ -17,11 +17,14 @@ def run(*cmd, check=True):
 
 subprocess.run([sys.executable, "build.py"], cwd=here, check=True)
 
-if not run("git", "status", "--porcelain").stdout.strip():
+if run("git", "status", "--porcelain").stdout.strip():
+    run("git", "add", "-A")
+    run("git", "commit", "-m", f"Sync from Jira {date.today().isoformat()}")
+
+run("git", "fetch", "--quiet")
+if run("git", "rev-list", "--count", "@{u}..HEAD").stdout.strip() == "0":
     print("No changes since the last publish.")
     sys.exit(0)
 
-run("git", "add", "-A")
-run("git", "commit", "-m", f"Sync from Jira {date.today().isoformat()}")
 run("git", "push")
 print("Pushed. The site updates in about a minute: https://jackcasstlesjones.github.io/moadjack/")
