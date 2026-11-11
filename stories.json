@@ -68,7 +68,7 @@
       "name": "Release 1: Staff chat",
       "start_date": "2026-11-16",
       "release_date": "2026-12-18",
-      "target_outcome": "CHIRP staff can answer \"how many\" questions about UK and US marine accidents themselves, in minutes rather than by searching reports by hand. They can trust each count because it is checked against the database and links to the reports behind it.",
+      "target_outcome": "CHIRP staff can answer \"how many\" questions about UK and US marine accidents themselves, in minutes rather than by searching reports by hand. They can trust each count because it is checked against the database and links to the reports behind it. For example, a staff member asks \"How many fishing vessels sank in UK reports since 2016, by year?\" and gets one exact number per year, with a link to the reports behind each count.",
       "estimate_days": 21
     },
     {
@@ -76,7 +76,7 @@
       "name": "Release 2: Full answers",
       "start_date": "2027-01-04",
       "release_date": "2027-01-29",
-      "target_outcome": "CHIRP staff can ask what went wrong, not only how many, and get answers drawn from the report text with every claim checked against the passage it cites. They can compare UK and US reports like for like on every field, find past incidents similar to one they describe, and start building a checked set of SHIELD codes.",
+      "target_outcome": "CHIRP staff can ask what went wrong, not only how many, and get answers drawn from the report text with every claim checked against the passage it cites. They can compare UK and US reports like for like on every field, find past incidents similar to one they describe, and start building a checked set of SHIELD codes. For example, a staff member asks \"What went wrong in enclosed space entries on bulk carriers? Compare the UK and US.\" and gets the common failings in plain maritime English, each claim linked to the page it came from, then follows up with \"And on tankers?\"",
       "estimate_days": 23
     },
     {
@@ -84,7 +84,7 @@
       "name": "Release 3: All countries",
       "start_date": "2027-01-27",
       "release_date": "2027-03-12",
-      "target_outcome": "Answers draw on reports from all eight countries plus CHIRP's own reports. Each accident counts once however many reports describe it, the database keeps itself up to date, and useful patterns the AI finds in report text are kept and reused rather than lost.",
+      "target_outcome": "Answers draw on reports from all eight countries plus CHIRP's own reports. Each accident counts once however many reports describe it, the database keeps itself up to date, and useful patterns the AI finds in report text are kept and reused rather than lost. For example, a staff member asks \"How many fishing vessels sank since 2016, by country?\" and the answer covers all eight countries, says how many accidents were described by more than one report and counted once, and labels which reports came from CHIRP.",
       "estimate_days": 21
     },
     {
@@ -92,7 +92,7 @@
       "name": "Release 4: Public access",
       "start_date": "2027-03-11",
       "release_date": "2027-04-09",
-      "target_outcome": "The chat is ready for seafarers to use safely. They can sign up, use it within limits that protect CHIRP's budget, and control their own data. CHIRP can catch and correct a wrong answer before it spreads.",
+      "target_outcome": "The chat is ready for seafarers to use safely. They can sign up, use it within limits that protect CHIRP's budget, and control their own data. CHIRP can catch and correct a wrong answer before it spreads. For example, a seafarer signs up with their email, accepts CHIRP's terms, asks about mooring line injuries, and flags an answer they think is wrong, which CHIRP staff then review and withdraw if needed.",
       "estimate_days": 21.5
     },
     {
@@ -100,7 +100,7 @@
       "name": "Release 5: Launch",
       "start_date": "2027-04-07",
       "release_date": "2027-04-16",
-      "target_outcome": "Real seafarers have tried the chat and their most important problems are fixed. It is open to anyone, easy to find, and explains what it can and can't do.",
+      "target_outcome": "Real seafarers have tried the chat and their most important problems are fixed. It is open to anyone, easy to find, and explains what it can and can't do. For example, invited seafarers try the chat in a closed beta and send feedback, the top problems are fixed, and then anyone can find the chat from a public landing page and read how to use it.",
       "estimate_days": 7
     }
   ],
