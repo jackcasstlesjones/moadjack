@@ -100,7 +100,7 @@ def fetch(env):
             "name": v["name"],
             "start_date": v.get("startDate"),
             "release_date": v.get("releaseDate"),
-            "target_outcome": v.get("description", ""),
+            "target_outcome": (v.get("description") or "").strip(),
             "estimate_days": days(sum((s["estimate_days"] or 0) * SECONDS_PER_DAY for s in stories if s["release"] == n)),
         })
 

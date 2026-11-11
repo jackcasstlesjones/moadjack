@@ -74,49 +74,12 @@ select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .release-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
 .release-name { font-weight: 700; font-size: 1.25rem; }
 .release-meta { color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
-.details-btn {
-  background: var(--accent-tint); color: var(--accent); border: 1px solid var(--accent);
-  border-radius: 999px; padding: 5px 14px; font: inherit; font-size: 0.82rem; font-weight: 500; cursor: pointer; min-height: 32px;
-}
-@media (hover: hover) { .details-btn:hover { background: rgba(45, 212, 191, 0.22); } }
 .release-outcome {
   max-width: 900px; margin: 10px 0 0;
   color: var(--text); font-size: 1.12rem; line-height: 1.5; font-weight: 500;
   border-left: 3px solid var(--accent); padding-left: 14px;
 }
-.release-risk {
-  max-width: 900px; margin-top: 10px; font-size: 0.85rem; color: var(--amber);
-  background: var(--amber-tint); border-left: 3px solid var(--amber); border-radius: 4px; padding: 8px 12px;
-}
-.release-risk b { font-weight: 600; }
 
-/* ---------- release details modal ---------- */
-dialog.rel-modal {
-  width: min(1240px, 94vw); max-height: 92vh; padding: 0; border: 1px solid var(--border); border-radius: 14px;
-  background: var(--bg); color: var(--text); box-shadow: 0 30px 80px rgba(0,0,0,.6);
-}
-dialog.rel-modal::backdrop { background: rgba(5, 6, 8, 0.72); }
-.rm-head {
-  position: sticky; top: 0; z-index: 1; background: var(--bg); border-bottom: 1px solid var(--border);
-  padding: 26px 64px 20px 32px;
-}
-.rm-head .release-outcome { max-width: none; font-size: 1.2rem; }
-.rm-head .release-risk { max-width: none; }
-.rm-close {
-  position: absolute; top: 18px; right: 18px; width: 40px; height: 40px; border-radius: 10px;
-  background: var(--surface); border: 1px solid var(--border); color: var(--muted); font-size: 1.1rem; cursor: pointer;
-}
-.rm-body { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 32px; padding: 24px 32px 32px; }
-.rm-body h3 { margin: 0 0 14px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
-.can-do-groups { columns: 2 280px; column-gap: 32px; }
-.can-do-group { break-inside: avoid; margin-bottom: 22px; }
-.can-do-group h4 { margin: 0 0 6px; font-size: 0.95rem; font-weight: 600; color: var(--accent); }
-.can-do-group ul { margin: 0; padding-left: 18px; font-size: 0.9rem; line-height: 1.5; }
-.can-do-group li { margin: 4px 0; }
-.rm-side { display: flex; flex-direction: column; gap: 12px; }
-.rm-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
-.rm-card h3 { margin-bottom: 6px; }
-.rm-card p { margin: 0; font-size: 0.88rem; line-height: 1.5; }
 .cell { display: flex; flex-direction: column; gap: 8px; padding: 0 8px 12px; min-height: 20px; position: relative; z-index: 1; }
 .cell-label { display: none; }
 
@@ -190,11 +153,6 @@ dialog.rel-modal::backdrop { background: rgba(5, 6, 8, 0.72); }
   .cell { padding: 0; }
   .release { padding: 22px 0 12px; }
   .release { position: static; max-width: none; }
-  dialog.rel-modal { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; border: 0; }
-  .rm-head { position: static; padding: 18px 60px 16px 16px; }
-  .rm-close { position: fixed; top: 12px; right: 12px; z-index: 2; }
-  .rm-body { grid-template-columns: 1fr; padding: 18px 16px 28px; gap: 20px; }
-  .details-btn { min-height: 44px; }
   .cell { padding: 4px 0 10px; }
   .cell.empty-cell { display: none; }
   .cell-label {
@@ -224,7 +182,6 @@ dialog.rel-modal::backdrop { background: rgba(5, 6, 8, 0.72); }
 </header>
 <div class="map-wrap"><div class="map" id="map"></div></div>
 <aside class="panel" id="panel" aria-hidden="true"></aside>
-<dialog class="rel-modal" id="relModal" aria-label="Release details"></dialog>
 
 <script type="application/json" id="data">__DATA__</script>
 <script>
@@ -267,41 +224,13 @@ function cardHTML(s) {
   </button>`;
 }
 
-function releaseHeadHTML(r, rs, withButton) {
-  const risk = (r.details || {})["Known risk"];
+function releaseHeadHTML(r, rs) {
+  const outcome = (r.target_outcome || "").trim();
   return `<div class="release-head">
       <span class="release-name">${esc(r.name)}</span>
       <span class="release-meta">${rs.length} stories · ${days(sumDays(rs))}</span>
-      ${withButton ? `<button class="details-btn" data-r="${r.order}">Release details</button>` : ""}
     </div>
-    <p class="release-outcome">${esc(r.target_outcome)}</p>
-    ${risk ? `<div class="release-risk"><b>Known risk:</b> ${esc(risk)}</div>` : ""}`;
-}
-
-function openReleaseModal(order) {
-  const r = releaseByOrder.get(order);
-  const rs = stories.filter(s => s.release === order);
-  const d = { ...(r.details || {}) };
-  delete d["Known risk"];
-  const canDo = d["What people can do"] || [];
-  delete d["What people can do"];
-  const m = $("relModal");
-  m.innerHTML = `<div class="rm-head">
-      <button class="rm-close" aria-label="Close">✕</button>
-      ${releaseHeadHTML(r, rs, false)}
-      <div class="release-meta" style="margin-top:10px">${fmtDateY(r.start_date)} → ${fmtDateY(r.release_date)}</div>
-    </div>
-    <div class="rm-body">
-      <section>
-        <h3>What people can do</h3>
-        <div class="can-do-groups">${canDo.map(g => `<div class="can-do-group"><h4>${esc(g.epic)}</h4>
-          <ul>${g.items.map(i => `<li>${esc(i)}</li>`).join("")}</ul></div>`).join("")}</div>
-      </section>
-      <aside class="rm-side">${Object.entries(d).map(([n, v]) =>
-        `<div class="rm-card"><h3>${esc(n)}</h3><p>${esc(v)}</p></div>`).join("")}</aside>
-    </div>`;
-  m.showModal();
-  m.scrollTop = 0;
+    ${outcome ? `<p class="release-outcome">${esc(outcome)}</p>` : ""}`;
 }
 
 function render() {
@@ -321,7 +250,7 @@ function render() {
 
   releases.forEach((r, k) => {
     const rs = stories.filter(s => s.release === r.order);
-    html += `<div class="release" style="grid-row:${2 * k + 3}">${releaseHeadHTML(r, rs, true)}</div>`;
+    html += `<div class="release" style="grid-row:${2 * k + 3}">${releaseHeadHTML(r, rs)}</div>`;
     epics.forEach((e, i) => {
       const cell = rs.filter(s => s.epic === e.key).sort(sorters[state.sort]);
       html += `<div class="cell${cell.length ? "" : " empty-cell"}" style="grid-area:${2 * k + 4}/${i + 1}"><div class="cell-label">${esc(e.name)}</div>${cell.map(cardHTML).join("")}</div>`;
@@ -377,8 +306,6 @@ $("sub").textContent = `${DATA.project.jira_space} · ${stories.length} stories 
 $("sort").addEventListener("change", e => { state.sort = e.target.value; render(); });
 $("map").addEventListener("click", e => {
   if (e.target.closest("a")) return;
-  const btn = e.target.closest(".details-btn");
-  if (btn) return openReleaseModal(+btn.dataset.r);
   const card = e.target.closest(".card");
   if (!card) return;
   card.dataset.key === state.selected ? closePanel() : openPanel(card.dataset.key);
@@ -388,10 +315,7 @@ $("panel").addEventListener("click", e => {
   const dep = e.target.closest(".dep-link");
   if (dep && byKey.has(dep.dataset.key)) openPanel(dep.dataset.key);
 });
-$("relModal").addEventListener("click", e => {
-  if (e.target === e.currentTarget || e.target.closest(".rm-close")) $("relModal").close();
-});
-document.addEventListener("keydown", e => { if (e.key === "Escape" && state.selected && !$("relModal").open) closePanel(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && state.selected) closePanel(); });
 
 render();
 </script>
