@@ -70,6 +70,9 @@ def fetch(env):
     jira = Jira(env["ATLASSIAN_EMAIL_ACCOUNT"], env["ATLASSIAN_API_KEY"])
     project = jira.get(f"/rest/api/2/project/{PROJECT}")
     versions = [v for v in jira.get(f"/rest/api/2/project/{PROJECT}/versions") if not v.get("archived")]
+    # Jira's stored version order doesn't follow its Releases page, so order by start date
+    # (falling back to release date) instead.
+    versions.sort(key=lambda v: v.get("startDate") or v.get("releaseDate") or "9999")
     version_order = {v["name"]: i for i, v in enumerate(versions, 1)}
     could_label = {f"could-{release_slug(v['name'])}": n for v, n in zip(versions, version_order.values())}
     backlog = len(versions) + 1  # coulds with no release label
