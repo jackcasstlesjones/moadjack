@@ -78,6 +78,10 @@ select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 }
 .release-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
 .release-name { font-weight: 700; font-size: clamp(1.02rem, 0.8rem + 0.4vw, 1.25rem); }
+.progress { display: flex; align-items: center; gap: 10px; margin: 8px 0 2px; flex-wrap: wrap; }
+.progress-bar { width: min(320px, 100%); height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+.progress-bar span { display: block; height: 100%; background: var(--must); border-radius: 999px; }
+.progress-text { color: var(--muted); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
 .release-meta { color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
 .release-outcome {
   max-width: 1000px; margin: 8px 0 0;
@@ -257,12 +261,25 @@ function countLine(rs) {
   return parts.join(" ");
 }
 
+function progressHTML(rs) {
+  const c = rs.filter(s => s.priority === "must" || s.priority === "should");
+  if (!c.length) return "";
+  const done = c.filter(s => s.done);
+  const total = sumDays(c), doneDays = sumDays(done);
+  const pct = total ? Math.round(100 * doneDays / total) : Math.round(100 * done.length / c.length);
+  return `<div class="progress" title="Must and should stories done, by estimated days">
+      <div class="progress-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><span style="width:${pct}%"></span></div>
+      <span class="progress-text">${pct}% · ${days(doneDays)} of ${days(total)} · ${done.length}/${c.length} must + should done</span>
+    </div>`;
+}
+
 function releaseHeadHTML(r, rs) {
   const outcome = (r.target_outcome || "").trim();
   return `<div class="release-head">
       <span class="release-name">${esc(r.name)}</span>
       <span class="release-meta">${countLine(rs)}</span>
     </div>
+    ${progressHTML(rs)}
     ${outcome ? `<p class="release-outcome">${esc(outcome)}</p>` : ""}`;
 }
 

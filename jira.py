@@ -105,6 +105,7 @@ def fetch(env):
                              None if fv else "could"),
             "estimate_days": days(f.get("timeoriginalestimate") or f.get("timeestimate")),
             "status": f["status"]["name"],
+            "done": f["status"]["statusCategory"]["key"] == "done",
             "start_date": f.get(START_DATE_FIELD),
             "due_date": f.get("duedate"),
             "blocked_by": [l["inwardIssue"]["key"] for l in links if "inwardIssue" in l],
