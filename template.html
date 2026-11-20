@@ -19,7 +19,7 @@
   --amber-tint: rgba(42, 78, 120, 0.35);
   --font: "Inter", system-ui, sans-serif;
   --must: #f58220;
-  --should: #f7b878;
+  --should: #d6d9df;
   --could: #6b717c;
   --mono: "JetBrains Mono", ui-monospace, monospace;
   --col: 128px;
@@ -109,11 +109,11 @@ select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .pill.est { color: var(--text); }
 .pill.dep { color: var(--amber); border-color: rgba(107,155,209,.45); }
 
-.card.p-must { box-shadow: inset 3px 0 0 var(--must); }
+.card.p-must { box-shadow: inset 4px 0 0 var(--must); }
 .card.p-should { box-shadow: inset 3px 0 0 var(--should); }
 .card.p-could { box-shadow: inset 3px 0 0 var(--could); }
-.pill.p-must { color: var(--must); border-color: rgba(245,130,32,.45); }
-.pill.p-should { color: var(--should); border-color: rgba(247,184,120,.4); }
+.pill.p-must { color: #1a1206; background: var(--must); border-color: var(--must); font-weight: 600; }
+.pill.p-should { color: var(--should); border-color: rgba(214,217,223,.55); }
 .pill.p-could { color: var(--muted); font-style: italic; }
 .card.could { background: transparent; border-style: dotted; }
 .card.could .card-sum { color: var(--muted); }
@@ -129,7 +129,7 @@ select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .lg-sel::before { background: var(--accent-tint); border: 1px solid var(--accent); }
 .lg-blk::before { background: var(--amber-tint); border: 1px solid var(--amber); }
 .lg-bd::before { border: 1px dashed var(--accent); }
-.lg-must::before { border: 1px solid var(--border); box-shadow: inset 3px 0 0 var(--must); }
+.lg-must::before { border: 1px solid var(--border); box-shadow: inset 4px 0 0 var(--must); }
 .lg-should::before { border: 1px solid var(--border); box-shadow: inset 3px 0 0 var(--should); }
 .lg-could::before { border: 1px dotted var(--muted); box-shadow: inset 3px 0 0 var(--could); }
 
