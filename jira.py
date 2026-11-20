@@ -64,6 +64,7 @@ def fetch(env):
     project = jira.get(f"/rest/api/2/project/{PROJECT}")
     versions = [v for v in jira.get(f"/rest/api/2/project/{PROJECT}/versions") if not v.get("archived")]
     version_order = {v["name"]: i for i, v in enumerate(versions, 1)}
+    backlog = len(versions) + 1  # stories with an epic but no fix version
 
     epics = jira.search(f"project = {PROJECT} AND issuetype = Epic ORDER BY Rank ASC", ["summary", "description"])
     raw = jira.search(f"project = {PROJECT} AND issuetype = Story ORDER BY Rank ASC",
@@ -74,7 +75,7 @@ def fetch(env):
     for i in raw:
         f = i["fields"]
         fv = [v["name"] for v in f.get("fixVersions") or [] if v["name"] in version_order]
-        if not fv or not f.get("parent"):
+        if not f.get("parent"):
             skipped.append(i["key"])
             continue
         links = [l for l in f.get("issuelinks") or [] if l["type"]["name"] == "Blocks"]
@@ -82,7 +83,7 @@ def fetch(env):
             "key": i["key"],
             "summary": f["summary"],
             "epic": f["parent"]["key"],
-            "release": version_order[fv[0]],
+            "release": version_order[fv[0]] if fv else backlog,
             "estimate_days": days(f.get("timeoriginalestimate") or f.get("timeestimate")),
             "status": f["status"]["name"],
             "start_date": f.get(START_DATE_FIELD),
@@ -102,6 +103,17 @@ def fetch(env):
             "release_date": v.get("releaseDate"),
             "target_outcome": (v.get("description") or "").strip(),
             "estimate_days": days(sum((s["estimate_days"] or 0) * SECONDS_PER_DAY for s in stories if s["release"] == n)),
+        })
+
+    backlog_stories = [s for s in stories if s["release"] == backlog]
+    if backlog_stories:
+        releases.append({
+            "order": backlog,
+            "name": "Backlog",
+            "start_date": None,
+            "release_date": None,
+            "target_outcome": "Not yet assigned to a release.",
+            "estimate_days": days(sum((s["estimate_days"] or 0) * SECONDS_PER_DAY for s in backlog_stories)),
         })
 
     data = {
