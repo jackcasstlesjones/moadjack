@@ -2,7 +2,7 @@
   "project": {
     "name": "tranche 2 draft v2",
     "jira_space": "T2DV",
-    "exported": "2026-11-11"
+    "exported": "2026-11-20"
   },
   "epics": [
     {
@@ -68,7 +68,7 @@
       "name": "Release 1: Staff chat",
       "start_date": "2026-11-16",
       "release_date": "2026-12-18",
-      "target_outcome": "CHIRP staff can answer \"how many\" questions about UK and US marine accidents themselves, in minutes rather than by searching reports by hand. They can trust each count because it is checked against the database and links to the reports behind it. For example, a staff member asks \"How many fishing vessels sank in UK reports since 2016, by year?\" and gets one exact number per year, with a link to the reports behind each count.",
+      "target_outcome": "CHIRP staff can answer \"how many\" questions about UK marine accidents themselves, in minutes rather than by searching MAIB reports by hand. They can trust each count because it is checked against the database and links to the reports behind it. For example, a staff member asks \"How many fishing vessels sank in UK reports since 2016, by year?\" and gets one exact number per year, with a link to the reports behind each count.",
       "estimate_days": 21
     },
     {
@@ -76,8 +76,8 @@
       "name": "Release 2: Full answers",
       "start_date": "2027-01-04",
       "release_date": "2027-01-29",
-      "target_outcome": "CHIRP staff can ask what went wrong, not only how many, and get answers drawn from the report text with every claim checked against the passage it cites. They can compare UK and US reports like for like on every field, find past incidents similar to one they describe, and start building a checked set of SHIELD codes. For example, a staff member asks \"What went wrong in enclosed space entries on bulk carriers? Compare the UK and US.\" and gets the common failings in plain maritime English, each claim linked to the page it came from, then follows up with \"And on tankers?\"",
-      "estimate_days": 23
+      "target_outcome": "CHIRP staff can ask what went wrong, not only how many, and get answers drawn from the text of UK reports with every claim checked against the passage it cites. Every UK report carries shared terms and extra detail for filtering, staff can find past incidents similar to one they describe, and CHIRP can start building a checked set of SHIELD codes. For example, a staff member asks \"What went wrong in enclosed space entries on bulk carriers?\" and gets the common failings in plain maritime English, each claim linked to the page it came from, then follows up with \"And on tankers?\"",
+      "estimate_days": 19.5
     },
     {
       "order": 3,
@@ -85,7 +85,7 @@
       "start_date": "2027-01-27",
       "release_date": "2027-03-12",
       "target_outcome": "Answers draw on reports from all eight countries plus CHIRP's own reports. Each accident counts once however many reports describe it, the database keeps itself up to date, and useful patterns the AI finds in report text are kept and reused rather than lost. For example, a staff member asks \"How many fishing vessels sank since 2016, by country?\" and the answer covers all eight countries, says how many accidents were described by more than one report and counted once, and labels which reports came from CHIRP.",
-      "estimate_days": 21
+      "estimate_days": 22
     },
     {
       "order": 4,
@@ -282,7 +282,9 @@
       "blocked_by": [
         "T2DV-82"
       ],
-      "blocks": [],
+      "blocks": [
+        "T2DV-139"
+      ],
       "url": "https://zigzagai.atlassian.net/browse/T2DV-83"
     },
     {
@@ -366,7 +368,7 @@
     },
     {
       "key": "T2DV-89",
-      "summary": "Compare vessel type and accident type like for like across UK and US",
+      "summary": "Build shared lists for vessel type and accident type from UK terms",
       "epic": "T2DV-68",
       "release": 2,
       "estimate_days": 2,
@@ -375,16 +377,17 @@
       "due_date": "2027-01-05",
       "blocked_by": [],
       "blocks": [
-        "T2DV-90"
+        "T2DV-90",
+        "T2DV-138"
       ],
       "url": "https://zigzagai.atlassian.net/browse/T2DV-89"
     },
     {
       "key": "T2DV-90",
-      "summary": "Compare outcome, severity and the remaining fields like for like",
+      "summary": "Build shared lists for outcome, severity and the remaining fields from UK terms",
       "epic": "T2DV-68",
       "release": 2,
-      "estimate_days": 2,
+      "estimate_days": 1,
       "status": "To Do",
       "start_date": "2027-01-06",
       "due_date": "2027-01-07",
@@ -393,13 +396,14 @@
       ],
       "blocks": [
         "T2DV-99",
-        "T2DV-92"
+        "T2DV-92",
+        "T2DV-138"
       ],
       "url": "https://zigzagai.atlassian.net/browse/T2DV-90"
     },
     {
       "key": "T2DV-91",
-      "summary": "Extract extra fields from UK and US reports",
+      "summary": "Extract extra fields from UK reports",
       "epic": "T2DV-68",
       "release": 2,
       "estimate_days": 2,
@@ -431,7 +435,7 @@
     },
     {
       "key": "T2DV-93",
-      "summary": "Propose SHIELD codes for every UK and US report",
+      "summary": "Propose SHIELD codes for every UK report",
       "epic": "T2DV-70",
       "release": 2,
       "estimate_days": 2,
@@ -449,7 +453,7 @@
       "summary": "Confirm or reject SHIELD codes in the review tool",
       "epic": "T2DV-70",
       "release": 2,
-      "estimate_days": 2,
+      "estimate_days": 1,
       "status": "To Do",
       "start_date": "2027-01-11",
       "due_date": "2027-01-12",
@@ -499,7 +503,7 @@
       "summary": "Ask follow-up questions",
       "epic": "T2DV-66",
       "release": 2,
-      "estimate_days": 2,
+      "estimate_days": 0.5,
       "status": "To Do",
       "start_date": "2027-01-12",
       "due_date": "2027-01-13",
@@ -626,7 +630,7 @@
     },
     {
       "key": "T2DV-105",
-      "summary": "Propose SHIELD codes for the six new countries' reports",
+      "summary": "Propose SHIELD codes for US reports and the six new countries' reports",
       "epic": "T2DV-70",
       "release": 3,
       "estimate_days": 2,
@@ -1189,6 +1193,22 @@
         "T2DV-81"
       ],
       "url": "https://zigzagai.atlassian.net/browse/T2DV-137"
+    },
+    {
+      "key": "T2DV-138",
+      "summary": "Map US terms to the shared vocabulary",
+      "epic": "T2DV-68",
+      "release": 3,
+      "estimate_days": 1,
+      "status": "To Do",
+      "start_date": "2027-01-27",
+      "due_date": "2027-01-27",
+      "blocked_by": [
+        "T2DV-89",
+        "T2DV-90"
+      ],
+      "blocks": [],
+      "url": "https://zigzagai.atlassian.net/browse/T2DV-138"
     }
   ]
 }
