@@ -54,6 +54,13 @@ def first_paragraph(wiki):
     return re.sub(r"[*_]{1,2}([^*_]+)[*_]{1,2}", r"\1", para).replace("\n", " ").strip()
 
 
+def release_slug(name):
+    """'Release 2: Full answers' -> 'r2', 'Foundation: ...' -> 'foundation', 'Pre-release: ...' -> 'pre-release'."""
+    head = name.split(":")[0].strip().lower()
+    m = re.fullmatch(r"release (\d+)", head)
+    return f"r{m.group(1)}" if m else head.replace(" ", "-")
+
+
 def days(seconds):
     d = (seconds or 0) / SECONDS_PER_DAY
     return int(d) if d == int(d) else d
@@ -64,12 +71,13 @@ def fetch(env):
     project = jira.get(f"/rest/api/2/project/{PROJECT}")
     versions = [v for v in jira.get(f"/rest/api/2/project/{PROJECT}/versions") if not v.get("archived")]
     version_order = {v["name"]: i for i, v in enumerate(versions, 1)}
-    backlog = len(versions) + 1  # stories with an epic but no fix version
+    could_label = {f"could-{release_slug(v['name'])}": n for v, n in zip(versions, version_order.values())}
+    backlog = len(versions) + 1  # coulds with no release label
 
     epics = jira.search(f"project = {PROJECT} AND issuetype = Epic ORDER BY Rank ASC", ["summary", "description"])
     raw = jira.search(f"project = {PROJECT} AND issuetype = Story ORDER BY Rank ASC",
                       ["summary", "parent", "fixVersions", "timeoriginalestimate", "timeestimate",
-                       "status", "duedate", START_DATE_FIELD, "issuelinks"])
+                       "status", "duedate", START_DATE_FIELD, "issuelinks", "labels"])
 
     stories, skipped = [], []
     for i in raw:
@@ -78,12 +86,17 @@ def fetch(env):
         if not f.get("parent"):
             skipped.append(i["key"])
             continue
+        # A could keeps its fix version empty so it stays out of Jira's release progress;
+        # its intended release comes from a could-<release> label instead.
+        placed = [could_label[l] for l in f.get("labels") or [] if l in could_label]
+        release = version_order[fv[0]] if fv else (placed[0] if placed else backlog)
         links = [l for l in f.get("issuelinks") or [] if l["type"]["name"] == "Blocks"]
         stories.append({
             "key": i["key"],
             "summary": f["summary"],
             "epic": f["parent"]["key"],
-            "release": version_order[fv[0]] if fv else backlog,
+            "release": release,
+            "could": not fv,
             "estimate_days": days(f.get("timeoriginalestimate") or f.get("timeestimate")),
             "status": f["status"]["name"],
             "start_date": f.get(START_DATE_FIELD),
@@ -102,7 +115,8 @@ def fetch(env):
             "start_date": v.get("startDate"),
             "release_date": v.get("releaseDate"),
             "target_outcome": (v.get("description") or "").strip(),
-            "estimate_days": days(sum((s["estimate_days"] or 0) * SECONDS_PER_DAY for s in stories if s["release"] == n)),
+            "estimate_days": days(sum((s["estimate_days"] or 0) * SECONDS_PER_DAY
+                                      for s in stories if s["release"] == n and not s["could"])),
         })
 
     backlog_stories = [s for s in stories if s["release"] == backlog]
@@ -112,8 +126,8 @@ def fetch(env):
             "name": "Backlog",
             "start_date": None,
             "release_date": None,
-            "target_outcome": "Not yet assigned to a release.",
-            "estimate_days": days(sum((s["estimate_days"] or 0) * SECONDS_PER_DAY for s in backlog_stories)),
+            "target_outcome": "Coulds not yet placed in a release.",
+            "estimate_days": 0,
         })
 
     data = {

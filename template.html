@@ -102,6 +102,9 @@ select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .pill.est { color: var(--text); }
 .pill.dep { color: var(--amber); border-color: rgba(107,155,209,.45); }
 
+.card.could { background: transparent; border-style: dotted; }
+.card.could .card-sum { color: var(--muted); }
+.pill.could { color: var(--muted); font-style: italic; }
 .card.selected { border-color: var(--accent); background: var(--accent-tint); }
 .card.is-blocker { border-color: var(--amber); background: var(--amber-tint); }
 .card.is-blocked { border-color: var(--accent); border-style: dashed; }
@@ -114,6 +117,7 @@ select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .lg-sel::before { background: var(--accent-tint); border: 1px solid var(--accent); }
 .lg-blk::before { background: var(--amber-tint); border: 1px solid var(--amber); }
 .lg-bd::before { border: 1px dashed var(--accent); }
+.lg-could::before { border: 1px dotted var(--muted); }
 
 /* ---------- detail panel ---------- */
 .panel {
@@ -183,7 +187,7 @@ select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
       <option value="key">Order: Jira key</option>
     </select>
   </div>
-  <div class="legend"><span class="lg-sel">Selected</span><span class="lg-blk">Blocks the selected story</span><span class="lg-bd">Blocked by the selected story</span></div>
+  <div class="legend"><span class="lg-sel">Selected</span><span class="lg-blk">Blocks the selected story</span><span class="lg-bd">Blocked by the selected story</span><span class="lg-could">Could</span></div>
   </div>
 </header>
 <div class="map-wrap"><div class="map" id="map"></div></div>
@@ -205,6 +209,8 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const fmtDateY = d => d ? new Date(d + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—";
 const days = n => `${+n}d`;
+const committed = list => list.filter(s => !s.could);
+const coulds = list => list.filter(s => s.could);
 const sumDays = list => list.reduce((t, s) => t + (+s.estimate_days || 0), 0);
 
 const sorters = {
@@ -217,6 +223,7 @@ const sorters = {
 function cardHTML(s) {
   const deps = (s.blocked_by || []).length;
   const cls = ["card"];
+  if (s.could) cls.push("could");
   if (state.selected) {
     const sel = byKey.get(state.selected);
     if (s.key === sel.key) cls.push("selected");
@@ -226,15 +233,23 @@ function cardHTML(s) {
   return `<button class="${cls.join(" ")}" data-key="${esc(s.key)}">
     <div class="card-top"><span>${esc(s.key)}</span></div>
     <div class="card-sum">${esc(s.summary)}</div>
-    <div class="card-foot"><span class="pill est">${days(s.estimate_days)}</span>${deps ? `<span class="pill dep">waits on ${deps}</span>` : ""}</div>
+    <div class="card-foot"><span class="pill est">${days(s.estimate_days)}</span>${s.could ? `<span class="pill could">could</span>` : ""}${deps ? `<span class="pill dep">waits on ${deps}</span>` : ""}</div>
   </button>`;
+}
+
+function countLine(rs) {
+  const c = committed(rs), k = coulds(rs);
+  const parts = [];
+  if (c.length) parts.push(`${c.length} stories · ${days(sumDays(c))}`);
+  if (k.length) parts.push(`+ ${k.length} could · ${days(sumDays(k))}`);
+  return parts.join(" ");
 }
 
 function releaseHeadHTML(r, rs) {
   const outcome = (r.target_outcome || "").trim();
   return `<div class="release-head">
       <span class="release-name">${esc(r.name)}</span>
-      <span class="release-meta">${rs.length} stories · ${days(sumDays(rs))}</span>
+      <span class="release-meta">${countLine(rs)}</span>
     </div>
     ${outcome ? `<p class="release-outcome">${esc(outcome)}</p>` : ""}`;
 }
@@ -250,7 +265,7 @@ function render() {
     const es = stories.filter(s => s.epic === e.key);
     return `<div class="lane" style="grid-column:${i + 1}"></div><div class="epic" style="grid-area:1/${i + 1}"><div class="epic-lane-top"><div class="epic-inner">
       <div class="epic-name">${esc(e.name)}</div>
-      <div class="epic-meta"><a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.key)}</a><span>${es.length} · ${days(sumDays(es))}</span></div>
+      <div class="epic-meta"><a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.key)}</a><span>${committed(es).length} · ${days(sumDays(committed(es)))}</span></div>
     </div></div></div><div class="epic-desc" style="grid-area:2/${i + 1}">${esc(e.description)}</div>`;
   }).join("");
 
@@ -258,7 +273,7 @@ function render() {
     const rs = stories.filter(s => s.release === r.order);
     html += `<div class="release" style="grid-row:${2 * k + 3}">${releaseHeadHTML(r, rs)}</div>`;
     epics.forEach((e, i) => {
-      const cell = rs.filter(s => s.epic === e.key).sort(sorters[state.sort]);
+      const cell = rs.filter(s => s.epic === e.key).sort((a, b) => a.could - b.could || sorters[state.sort](a, b));
       html += `<div class="cell${cell.length ? "" : " empty-cell"}" style="grid-area:${2 * k + 4}/${i + 1}"><div class="cell-label">${esc(e.name)}</div>${cell.map(cardHTML).join("")}</div>`;
     });
   });
@@ -285,6 +300,7 @@ function openPanel(key) {
     <dl>
       <dt>Epic</dt><dd>${esc(e ? e.name : s.epic)}</dd>
       <dt>Release</dt><dd>${esc(r ? r.name : s.release)}</dd>
+      <dt>Priority</dt><dd>${s.could ? "Could (not counted in release progress)" : "Committed"}</dd>
       <dt>Estimate</dt><dd>${+s.estimate_days} working day${+s.estimate_days === 1 ? "" : "s"}</dd>
       <dt>Dates</dt><dd>${fmtDateY(s.start_date)} → ${fmtDateY(s.due_date)}</dd>
       <dt>Status</dt><dd>${esc(s.status)}</dd>
@@ -308,7 +324,7 @@ function closePanel() {
 
 /* ---------- init ---------- */
 $("title").textContent = "CHIRPdb Tranche 2 Story Map";
-$("sub").textContent = `${DATA.project.jira_space} · ${stories.length} stories · estimates in working days`;
+$("sub").textContent = `${DATA.project.jira_space} · ${committed(stories).length} stories + ${coulds(stories).length} coulds · estimates in working days`;
 $("sort").addEventListener("change", e => { state.sort = e.target.value; render(); });
 $("map").addEventListener("click", e => {
   if (e.target.closest("a")) return;
