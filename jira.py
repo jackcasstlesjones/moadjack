@@ -1,4 +1,4 @@
-"""Pull the T2DV story map (epics, releases, stories) from Jira Cloud."""
+"""Pull the CT2 story map (epics, releases, stories) from Jira Cloud."""
 import base64
 import json
 import re
@@ -8,7 +8,7 @@ from datetime import date
 from pathlib import Path
 
 SITE = "https://zigzagai.atlassian.net"
-PROJECT = "T2DV"
+PROJECT = "CT2"
 SECONDS_PER_DAY = 8 * 3600  # Jira's default working day
 START_DATE_FIELD = "customfield_10015"
 
