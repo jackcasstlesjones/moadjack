@@ -144,6 +144,7 @@ select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .panel h2 { font-size: 1.05rem; margin: 6px 40px 14px 0; line-height: 1.35; }
 .panel .key { font-family: var(--mono); color: var(--muted); font-size: 0.8rem; }
 .panel dl { display: grid; grid-template-columns: 110px 1fr; gap: 8px 12px; margin: 0 0 16px; font-size: 0.86rem; }
+.label-list { display: flex; flex-wrap: wrap; gap: 4px; }
 .panel dt { color: var(--muted); }
 .panel dd { margin: 0; font-variant-numeric: tabular-nums; }
 .panel h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 18px 0 8px; }
@@ -312,6 +313,7 @@ function openPanel(key) {
       <dt>Epic</dt><dd>${esc(e ? e.name : s.epic)}</dd>
       <dt>Release</dt><dd>${esc(r ? r.name : s.release)}</dd>
       <dt>Priority</dt><dd>${s.priority ? s.priority[0].toUpperCase() + s.priority.slice(1) : "—"}${s.could ? " (not counted in release progress)" : ""}</dd>
+      <dt>Labels</dt><dd>${(s.labels || []).length ? `<span class="label-list">${s.labels.map(l => `<span class="pill">${esc(l)}</span>`).join("")}</span>` : "—"}</dd>
       <dt>Estimate</dt><dd>${+s.estimate_days} working day${+s.estimate_days === 1 ? "" : "s"}</dd>
       <dt>Dates</dt><dd>${fmtDateY(s.start_date)} → ${fmtDateY(s.due_date)}</dd>
       <dt>Status</dt><dd>${esc(s.status)}</dd>
