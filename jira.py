@@ -100,6 +100,8 @@ def fetch(env):
             "epic": f["parent"]["key"],
             "release": release,
             "could": not fv,
+            "priority": next((l for l in ("must", "should", "could") if l in (f.get("labels") or [])),
+                             None if fv else "could"),
             "estimate_days": days(f.get("timeoriginalestimate") or f.get("timeestimate")),
             "status": f["status"]["name"],
             "start_date": f.get(START_DATE_FIELD),

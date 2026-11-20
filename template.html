@@ -18,6 +18,9 @@
   --amber: #6b9bd1;
   --amber-tint: rgba(42, 78, 120, 0.35);
   --font: "Inter", system-ui, sans-serif;
+  --must: #f58220;
+  --should: #f7b878;
+  --could: #6b717c;
   --mono: "JetBrains Mono", ui-monospace, monospace;
   --col: 128px;
   --gap: 8px;
@@ -102,9 +105,14 @@ select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .pill.est { color: var(--text); }
 .pill.dep { color: var(--amber); border-color: rgba(107,155,209,.45); }
 
+.card.p-must { box-shadow: inset 3px 0 0 var(--must); }
+.card.p-should { box-shadow: inset 3px 0 0 var(--should); }
+.card.p-could { box-shadow: inset 3px 0 0 var(--could); }
+.pill.p-must { color: var(--must); border-color: rgba(245,130,32,.45); }
+.pill.p-should { color: var(--should); border-color: rgba(247,184,120,.4); }
+.pill.p-could { color: var(--muted); font-style: italic; }
 .card.could { background: transparent; border-style: dotted; }
 .card.could .card-sum { color: var(--muted); }
-.pill.could { color: var(--muted); font-style: italic; }
 .card.selected { border-color: var(--accent); background: var(--accent-tint); }
 .card.is-blocker { border-color: var(--amber); background: var(--amber-tint); }
 .card.is-blocked { border-color: var(--accent); border-style: dashed; }
@@ -117,7 +125,9 @@ select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .lg-sel::before { background: var(--accent-tint); border: 1px solid var(--accent); }
 .lg-blk::before { background: var(--amber-tint); border: 1px solid var(--amber); }
 .lg-bd::before { border: 1px dashed var(--accent); }
-.lg-could::before { border: 1px dotted var(--muted); }
+.lg-must::before { border: 1px solid var(--border); box-shadow: inset 3px 0 0 var(--must); }
+.lg-should::before { border: 1px solid var(--border); box-shadow: inset 3px 0 0 var(--should); }
+.lg-could::before { border: 1px dotted var(--muted); box-shadow: inset 3px 0 0 var(--could); }
 
 /* ---------- detail panel ---------- */
 .panel {
@@ -187,7 +197,7 @@ select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
       <option value="key">Order: Jira key</option>
     </select>
   </div>
-  <div class="legend"><span class="lg-sel">Selected</span><span class="lg-blk">Blocks the selected story</span><span class="lg-bd">Blocked by the selected story</span><span class="lg-could">Could</span></div>
+  <div class="legend"><span class="lg-sel">Selected</span><span class="lg-blk">Blocks the selected story</span><span class="lg-bd">Blocked by the selected story</span><span class="lg-must">Must</span><span class="lg-should">Should</span><span class="lg-could">Could</span></div>
   </div>
 </header>
 <div class="map-wrap"><div class="map" id="map"></div></div>
@@ -224,6 +234,7 @@ function cardHTML(s) {
   const deps = (s.blocked_by || []).length;
   const cls = ["card"];
   if (s.could) cls.push("could");
+  if (s.priority) cls.push(`p-${s.priority}`);
   if (state.selected) {
     const sel = byKey.get(state.selected);
     if (s.key === sel.key) cls.push("selected");
@@ -233,7 +244,7 @@ function cardHTML(s) {
   return `<button class="${cls.join(" ")}" data-key="${esc(s.key)}">
     <div class="card-top"><span>${esc(s.key)}</span></div>
     <div class="card-sum">${esc(s.summary)}</div>
-    <div class="card-foot"><span class="pill est">${days(s.estimate_days)}</span>${s.could ? `<span class="pill could">could</span>` : ""}${deps ? `<span class="pill dep">waits on ${deps}</span>` : ""}</div>
+    <div class="card-foot"><span class="pill est">${days(s.estimate_days)}</span>${s.priority ? `<span class="pill p-${s.priority}">${s.priority}</span>` : ""}${deps ? `<span class="pill dep">waits on ${deps}</span>` : ""}</div>
   </button>`;
 }
 
@@ -300,7 +311,7 @@ function openPanel(key) {
     <dl>
       <dt>Epic</dt><dd>${esc(e ? e.name : s.epic)}</dd>
       <dt>Release</dt><dd>${esc(r ? r.name : s.release)}</dd>
-      <dt>Priority</dt><dd>${s.could ? "Could (not counted in release progress)" : "Committed"}</dd>
+      <dt>Priority</dt><dd>${s.priority ? s.priority[0].toUpperCase() + s.priority.slice(1) : "—"}${s.could ? " (not counted in release progress)" : ""}</dd>
       <dt>Estimate</dt><dd>${+s.estimate_days} working day${+s.estimate_days === 1 ? "" : "s"}</dd>
       <dt>Dates</dt><dd>${fmtDateY(s.start_date)} → ${fmtDateY(s.due_date)}</dd>
       <dt>Status</dt><dd>${esc(s.status)}</dd>
