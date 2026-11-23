@@ -157,6 +157,30 @@
       "url": "https://zigzagai.atlassian.net/browse/CT2-9"
     },
     {
+      "key": "CT2-151",
+      "summary": "Spike: how well Jev checks review items, measured against reviewers' past decisions",
+      "epic": "CT2-5",
+      "release": 2,
+      "could": false,
+      "labels": [
+        "must"
+      ],
+      "priority": "must",
+      "estimate_days": 0.5,
+      "status": "In Progress",
+      "done": false,
+      "start_date": "2026-11-20",
+      "due_date": "2026-12-04",
+      "blocked_by": [
+        "CT2-150",
+        "CT2-157"
+      ],
+      "blocks": [
+        "CT2-152"
+      ],
+      "url": "https://zigzagai.atlassian.net/browse/CT2-151"
+    },
+    {
       "key": "CT2-10",
       "summary": "Send a question to the AI and stream the answer back",
       "epic": "CT2-1",
@@ -629,7 +653,7 @@
       ],
       "priority": "must",
       "estimate_days": 1,
-      "status": "To Do",
+      "status": "In Progress",
       "done": false,
       "start_date": "2026-11-20",
       "due_date": "2026-11-27",
@@ -660,30 +684,6 @@
         "CT2-151"
       ],
       "url": "https://zigzagai.atlassian.net/browse/CT2-150"
-    },
-    {
-      "key": "CT2-151",
-      "summary": "Spike: how well Jev checks review items, measured against reviewers' past decisions",
-      "epic": "CT2-5",
-      "release": 2,
-      "could": false,
-      "labels": [
-        "must"
-      ],
-      "priority": "must",
-      "estimate_days": 0.5,
-      "status": "To Do",
-      "done": false,
-      "start_date": "2026-11-20",
-      "due_date": "2026-12-04",
-      "blocked_by": [
-        "CT2-150",
-        "CT2-157"
-      ],
-      "blocks": [
-        "CT2-152"
-      ],
-      "url": "https://zigzagai.atlassian.net/browse/CT2-151"
     },
     {
       "key": "CT2-152",
